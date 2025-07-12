@@ -19,7 +19,7 @@ class UsersView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColor.whiteColor.withAlpha(97),
+      backgroundColor: AppColor.whiteColor,
       appBar: _buildAppBarWidget(),
       body: SafeArea(child: _buildBodyWidget()),
       floatingActionButton: FloatingActionButton.extended(

@@ -1,6 +1,7 @@
 import 'package:fitnessapp/componet/app_snackbar.dart';
 import 'package:fitnessapp/sharedPref/app_sharedPref.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/login_model.dart';
 import '../services/api_service.dart';
 
@@ -18,15 +19,14 @@ class AuthController extends GetxController {
     try {
       isLoading.value = true;
       error.value = '';
-
       final loginRequest = LoginRequest(username: username, password: password);
       final loginResponse = await _apiService.login(loginRequest);
-
       token.value = loginResponse.token ?? "";
       isLoggedIn.value = true;
       if (loginResponse.token?.isNotEmpty == true) {
+        SharedPreferences preferences = await SharedPreferences.getInstance();
+        preferences.setBool("login", true);
         AppSnackbar.success('Success', 'Login successful!');
-        appSharedPref?.setIsLogin(true);
         Get.offNamed('/users');
       } else {
         AppSnackbar.error(
@@ -44,9 +44,9 @@ class AuthController extends GetxController {
     }
   }
 
-  void logout() {
+  void logout() async {
     token.value = '';
-    isLoggedIn.value = false;
+    await appSharedPref?.clear();
     Get.offAllNamed('/login');
   }
 }

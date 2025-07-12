@@ -5,7 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/route_manager.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter_animate/flutter_animate.dart'; // <-- Import Animate
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:shared_preferences/shared_preferences.dart'; // <-- Import Animate
 
 class WalcomeScreen extends StatefulWidget {
   const WalcomeScreen({super.key});
@@ -15,16 +16,23 @@ class WalcomeScreen extends StatefulWidget {
 }
 
 class _WalcomeScreenState extends State<WalcomeScreen> {
-  AppSharedPref? appSharedPref;
+  AppSharedPref appSharedPref = AppSharedPref();
+  bool isLogin = false;
+  void getLogin() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    isLogin = preferences.getBool("login") ?? false;
+    setState(() {});
+  }
+
   @override
   void initState() {
     super.initState();
+    getLogin();
     Future.delayed(const Duration(seconds: 3), () async {
-      bool islogin = await appSharedPref?.getIsLogin() ?? false;
-      if (islogin == true) {
-        Get.offNamed("/home");
-      } else {
+      if (isLogin) {
         Get.offNamed("/users");
+      } else {
+        Get.offNamed("/login");
       }
     });
   }
@@ -37,12 +45,10 @@ class _WalcomeScreenState extends State<WalcomeScreen> {
           child: Container(
             width: double.infinity,
             height: double.infinity,
-            decoration:
-                const BoxDecoration(),
+            decoration: const BoxDecoration(),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-
                 SvgPicture.asset(AppImagePath.splash, width: 300, height: 300)
                     .animate()
                     .fadeIn(duration: 1.seconds)

@@ -1,4 +1,5 @@
 import 'package:fitnessapp/componet/app_snackbar.dart';
+import 'package:fitnessapp/util/app_string.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../models/user_model.dart';
@@ -60,7 +61,7 @@ class UserController extends GetxController
       animationController.forward();
     } catch (e) {
       error.value = e.toString();
-      AppSnackbar.error('Failed to fetch users', e.toString());
+      AppSnackbar.error(AppString.errorfetch, e.toString());
     } finally {
       isLoading.value = false;
     }
@@ -76,10 +77,10 @@ class UserController extends GetxController
       users.add(newUser);
 
       Get.back();
-      AppSnackbar.success("Success", "User added successfully!");
+      AppSnackbar.success(AppString.success, AppString.successAdd);
     } catch (e) {
       error.value = e.toString();
-      AppSnackbar.error('Failed to add user', e.toString());
+      AppSnackbar.error(AppString.errorAdd, e.toString());
     } finally {
       isAddingUser.value = false;
     }
@@ -96,12 +97,11 @@ class UserController extends GetxController
       if (index != -1) {
         users[index] = updatedUser;
       }
-      print("User updated successfully");
       Get.back();
-      AppSnackbar.success('Success', 'User updated successfully!');
+      AppSnackbar.success(AppString.success, AppString.successMessage);
     } catch (e) {
       error.value = e.toString();
-      AppSnackbar.error('Failed to update user', e.toString());
+      AppSnackbar.error(AppString.errorfetch, e.toString());
     } finally {
       isUpdatingUser.value = false;
     }
@@ -117,10 +117,10 @@ class UserController extends GetxController
 
       users.removeWhere((user) => user.id == id);
 
-      AppSnackbar.success('Success', 'User deleted successfully!');
+      AppSnackbar.success(AppString.success, AppString.successdelete);
     } catch (e) {
       error.value = e.toString();
-      AppSnackbar.error('Failed to delete user', e.toString());
+      AppSnackbar.error(AppString.errorDelete, e.toString());
     } finally {
       isDeletingUser.value = false;
       deletingUserId.value = 0;

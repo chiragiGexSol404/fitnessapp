@@ -1,7 +1,9 @@
+import 'package:fitnessapp/controllers/auth_controller.dart';
 import 'package:fitnessapp/controllers/user_controller.dart';
 import 'package:fitnessapp/models/user_model.dart';
 import 'package:fitnessapp/sharedPref/app_sharedPref.dart';
 import 'package:fitnessapp/util/app_color.dart';
+import 'package:fitnessapp/util/app_string.dart';
 import 'package:fitnessapp/views/add_edit_user_view.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -10,13 +12,14 @@ import 'package:google_fonts/google_fonts.dart';
 
 class UsersView extends StatelessWidget {
   final UserController userController = Get.put(UserController());
+  final AuthController authController = Get.put(AuthController());
 
   UsersView({super.key, this.appSharedPref});
   final AppSharedPref? appSharedPref;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColor.whiteColor.withValues(alpha: 0.97),
+      backgroundColor: AppColor.whiteColor.withAlpha(97),
       appBar: _buildAppBarWidget(),
       body: SafeArea(child: _buildBodyWidget()),
       floatingActionButton: FloatingActionButton.extended(
@@ -24,12 +27,14 @@ class UsersView extends StatelessWidget {
         backgroundColor: AppColor.primaryColor,
         foregroundColor: AppColor.whiteColor,
         icon: const Icon(Icons.add),
-        label: Text('Add User', style: GoogleFonts.poppins()),
+        label: Text(AppString.addUser, style: GoogleFonts.poppins()),
       ),
     );
   }
 
   Obx _buildBodyWidget() {
+    var islogin = appSharedPref?.getIsLogin() ?? false;
+    print("login==>$islogin");
     return Obx(() {
       if (userController.isLoading.value) {
         return _buildLoadingState();
@@ -62,7 +67,7 @@ class UsersView extends StatelessWidget {
   _buildAppBarWidget() {
     return AppBar(
       title: Text(
-        'Users Management',
+        AppString.usersManagement,
         style: GoogleFonts.poppins(
           fontWeight: FontWeight.bold,
           fontSize: 20,
@@ -75,9 +80,9 @@ class UsersView extends StatelessWidget {
       elevation: 0,
       actions: [
         IconButton(
-          icon: const Icon(Icons.logout),
+          icon: const Icon(Icons.logout, color: AppColor.whiteColor),
           onPressed: () async {
-            await appSharedPref?.clear();
+            authController.logout();
             Get.offNamed("/login");
           },
         ),
@@ -93,7 +98,7 @@ class UsersView extends StatelessWidget {
           CircularProgressIndicator(color: AppColor.primaryColor),
           const SizedBox(height: 20),
           Text(
-            'Loading users...',
+            AppString.loadingUsers,
             style: GoogleFonts.poppins(
               fontSize: 16,
               fontWeight: FontWeight.w500,
@@ -112,11 +117,11 @@ class UsersView extends StatelessWidget {
           Icon(
             Icons.error_outline,
             size: 80,
-            color: AppColor.redColor.withValues(alpha: .3),
+            color: AppColor.redColor.withAlpha(100),
           ),
           const SizedBox(height: 16),
           Text(
-            'Error loading users',
+            AppString.errorLoadingUsers,
             style: GoogleFonts.poppins(
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -135,7 +140,7 @@ class UsersView extends StatelessWidget {
           ElevatedButton.icon(
             onPressed: () => userController.fetchUsers(),
             icon: const Icon(Icons.refresh),
-            label: Text('Retry', style: GoogleFonts.poppins()),
+            label: Text(AppString.retry, style: GoogleFonts.poppins()),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColor.primaryColor,
               foregroundColor: AppColor.whiteColor,
@@ -154,11 +159,11 @@ class UsersView extends StatelessWidget {
           Icon(
             Icons.people_outline,
             size: 80,
-            color: AppColor.greyColor.withValues(alpha: .3),
+            color: AppColor.greyColor.withAlpha(100),
           ),
           const SizedBox(height: 16),
           Text(
-            'No users found',
+            AppString.noUsersFound,
             style: GoogleFonts.poppins(
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -166,7 +171,7 @@ class UsersView extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'Add your first user to get started',
+            AppString.addFirstUser,
             style: GoogleFonts.poppins(color: AppColor.greyColor),
           ),
           const SizedBox(height: 24),
@@ -174,7 +179,7 @@ class UsersView extends StatelessWidget {
             onPressed: _addUser,
             icon: const Icon(Icons.add),
             label: Text(
-              'Add User',
+              AppString.addUser,
               style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
             ),
             style: ElevatedButton.styleFrom(
@@ -245,7 +250,7 @@ class UsersView extends StatelessWidget {
                         _editUser(user);
                       },
                       icon: const Icon(Icons.edit),
-                      label: Text('Edit', style: GoogleFonts.poppins()),
+                      label: Text(AppString.edit, style: GoogleFonts.poppins()),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColor.primaryColor,
                         foregroundColor: AppColor.whiteColor,
@@ -260,7 +265,10 @@ class UsersView extends StatelessWidget {
                         _confirmDelete(user);
                       },
                       icon: const Icon(Icons.delete),
-                      label: Text('Delete', style: GoogleFonts.poppins()),
+                      label: Text(
+                        AppString.delete,
+                        style: GoogleFonts.poppins(),
+                      ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColor.lightredColor,
                         foregroundColor: AppColor.rgbRedColorlight,
@@ -276,26 +284,24 @@ class UsersView extends StatelessWidget {
     );
   }
 
-  void _addUser() {
-    Get.to(() => AddEditUserView(isEditing: false, user: null));
-  }
+  void _addUser() =>
+      Get.to(() => AddEditUserView(isEditing: false, user: null));
 
-  void _editUser(User user) {
-    Get.to(() => AddEditUserView(isEditing: true, user: user));
-  }
+  void _editUser(User user) =>
+      Get.to(() => AddEditUserView(isEditing: true, user: user));
 
   void _confirmDelete(User user) {
     Get.dialog(
       AlertDialog(
-        title: Text('Delete User', style: GoogleFonts.poppins()),
+        title: Text(AppString.deleteUser, style: GoogleFonts.poppins()),
         content: Text(
-          'Are you sure you want to delete ${user.username}?',
+          '${AppString.confirmDelete} ${user.username}?',
           style: GoogleFonts.poppins(),
         ),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: Text('Cancel', style: GoogleFonts.poppins()),
+            child: Text(AppString.cancel, style: GoogleFonts.poppins()),
           ),
           ElevatedButton(
             onPressed: () {
@@ -306,7 +312,7 @@ class UsersView extends StatelessWidget {
               backgroundColor: Colors.red.shade600,
               foregroundColor: Colors.white,
             ),
-            child: Text('Delete', style: GoogleFonts.poppins()),
+            child: Text(AppString.delete, style: GoogleFonts.poppins()),
           ),
         ],
       ),
@@ -439,7 +445,7 @@ class AnimatedUserCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(28),
         boxShadow: [
           BoxShadow(
-            color: AppColor.primaryColor.withValues(alpha: 0.3),
+            color: AppColor.primaryColor.withAlpha(77),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -462,15 +468,15 @@ class AnimatedUserCard extends StatelessWidget {
     Get.dialog(
       AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text('Delete User', style: GoogleFonts.poppins()),
+        title: Text(AppString.deleteUser, style: GoogleFonts.poppins()),
         content: Text(
-          'Are you sure you want to delete ${user.displayName}?',
+          '${AppString.confirmDelete} ${user.displayName}?',
           style: GoogleFonts.poppins(),
         ),
         actions: [
           TextButton(
             onPressed: () => Get.back(),
-            child: Text('Cancel', style: GoogleFonts.poppins()),
+            child: Text(AppString.cancel, style: GoogleFonts.poppins()),
           ),
           ElevatedButton(
             onPressed: () {
@@ -481,10 +487,7 @@ class AnimatedUserCard extends StatelessWidget {
               backgroundColor: AppColor.redColor,
               foregroundColor: AppColor.whiteColor,
             ),
-            child: Text(
-              'Delete',
-              style: GoogleFonts.poppins(textStyle: TextStyle()),
-            ),
+            child: Text(AppString.delete, style: GoogleFonts.poppins()),
           ),
         ],
       ),

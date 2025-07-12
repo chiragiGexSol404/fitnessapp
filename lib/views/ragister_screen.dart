@@ -84,11 +84,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         color: AppColor.primaryColor,
                         onPressed: () {
                           if (_formKey.currentState?.validate() ?? false) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Registration Successful'),
-                              ),
-                            );
+                            
                           }
                         },
                       ),
@@ -98,7 +94,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const Text(
-                          "Already have an account?",
+                          AppString.alreadyHaveAccount,
                           style: TextStyle(color: Colors.black54, fontSize: 14),
                         ),
                         TextButton(

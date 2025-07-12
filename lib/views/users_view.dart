@@ -1,7 +1,6 @@
 import 'package:fitnessapp/controllers/auth_controller.dart';
 import 'package:fitnessapp/controllers/user_controller.dart';
 import 'package:fitnessapp/models/user_model.dart';
-import 'package:fitnessapp/sharedPref/app_sharedPref.dart';
 import 'package:fitnessapp/util/app_color.dart';
 import 'package:fitnessapp/util/app_string.dart';
 import 'package:fitnessapp/views/add_edit_user_view.dart';
@@ -14,8 +13,7 @@ class UsersView extends StatelessWidget {
   final UserController userController = Get.put(UserController());
   final AuthController authController = Get.put(AuthController());
 
-  UsersView({super.key, this.appSharedPref});
-  final AppSharedPref? appSharedPref;
+  UsersView({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,8 +31,6 @@ class UsersView extends StatelessWidget {
   }
 
   Obx _buildBodyWidget() {
-    var islogin = appSharedPref?.getIsLogin() ?? false;
-    print("login==>$islogin");
     return Obx(() {
       if (userController.isLoading.value) {
         return _buildLoadingState();

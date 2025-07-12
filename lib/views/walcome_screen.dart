@@ -1,4 +1,3 @@
-import 'package:fitnessapp/sharedPref/app_sharedPref.dart';
 import 'package:fitnessapp/util/app_image_path.dart';
 import 'package:fitnessapp/util/app_string.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +15,6 @@ class WalcomeScreen extends StatefulWidget {
 }
 
 class _WalcomeScreenState extends State<WalcomeScreen> {
-  AppSharedPref appSharedPref = AppSharedPref();
   bool isLogin = false;
   void getLogin() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();

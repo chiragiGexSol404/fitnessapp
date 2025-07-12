@@ -1,5 +1,4 @@
 import 'package:fitnessapp/componet/app_snackbar.dart';
-import 'package:fitnessapp/sharedPref/app_sharedPref.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/login_model.dart';
@@ -7,7 +6,6 @@ import '../services/api_service.dart';
 
 class AuthController extends GetxController {
   final ApiService _apiService = ApiService();
-  AppSharedPref? appSharedPref;
 
   // Observable variables
   final RxBool isLoading = false.obs;
@@ -46,7 +44,9 @@ class AuthController extends GetxController {
 
   void logout() async {
     token.value = '';
-    await appSharedPref?.clear();
+
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    preferences.clear();
     Get.offAllNamed('/login');
   }
 }
